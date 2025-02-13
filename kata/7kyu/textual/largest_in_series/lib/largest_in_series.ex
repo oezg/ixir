@@ -1,18 +1,13 @@
 defmodule LargestInSeries do
-  @moduledoc """
-  Documentation for `LargestInSeries`.
-  """
+  @moduledoc false
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> LargestInSeries.hello()
-      :world
-
-  """
-  def hello do
-    :world
+  @spec solution(String.t()) :: integer()
+  def solution(digits) do
+    digits
+    |> to_charlist()
+    |> Enum.map(&(&1 - ?0))
+    |> Enum.chunk_every(5, 1, :discard)
+    |> Enum.map(&Integer.undigits/1)
+    |> Enum.max()
   end
 end
