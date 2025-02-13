@@ -1,3 +1,3 @@
 # ixir
-Wanna be beetlejuice
+Learning Elixir with exercises
 
