@@ -1,28 +1,16 @@
 defmodule Polydivisible do
   @moduledoc false
+  @max_polydivisible 3_608_528_850_368_400_786_036_725
 
   def next(n) do
-    if polydivisible?(n) do
-      next(n + 1)
-    else
-      m = div(n, 10)
-
-      if polydivisible?(m) do
-      end
-    end
-
-    # if n < 1 do
-    #   1
-    # else
-    #   if 3_608_528_850_368_400_786_036_725 <= n do
-    #     nil
-    #   else
-    #     find_polydivisible(n)
-    #   end
-    # end
   end
 
   def next_polydivisible(n) do
+    if n < 10 do
+      n + 1
+    else
+    end
+
     len = count_digits(n)
 
     if count_digits(next_divisible_by_length(n)) > len do
