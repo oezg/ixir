@@ -2,20 +2,15 @@ defmodule Banzai do
   @moduledoc false
 
   def amidakuji(ar) do
-    height = length(ar)
-
-    matrix = [padding(height, false) | matrice(ar)]
-
-    width = length(matrix)
-  end
-
-  def matrice(ar) do
-    Enum.map(ar, &String.graphemes/1)
-    |> Enum.zip_with(&Function.identity/1)
-    |> Enum.map(fn row -> Enum.map(row, &(&1 == "1")) end)
-  end
-
-  def padding(n, value) do
-    Stream.repeatedly(fn -> value end) |> Enum.take(n)
+    0..String.length(Enum.at(ar, 0))
+    |> Enum.map(fn i ->
+      Enum.reduce(Enum.reverse(ar), i, fn row, i ->
+        cond do
+          i > 0 and String.at(row, i - 1) == "1" -> i - 1
+          String.at(row, i) == "1" -> i + 1
+          true -> i
+        end
+      end)
+    end)
   end
 end
