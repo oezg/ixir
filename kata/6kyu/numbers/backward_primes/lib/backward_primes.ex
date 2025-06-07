@@ -9,22 +9,26 @@ defmodule BackwardPrimes do
     do: backwards_prime(start + 1, stop)
 
   def backwards_prime(start, stop) do
-    init_primes = stop |> digit_ceil() |> root_ceil() |> sieve()
-
-    prime? = fn number ->
-      root = root_ceil(number)
-
-      init_primes
-      |> Stream.take_while(&(&1 <= root))
-      |> Enum.all?(&(rem(number, &1) > 0))
-    end
+    prime? = is_prime(stop)
 
     for prime <- start..stop//2,
         prime?.(prime),
         reversed = reverse_number(prime),
         prime != reversed,
         prime?.(reversed),
-        do: reverse_number(reversed)
+        do: prime
+  end
+
+  defp is_prime(upper_bound) do
+    init_primes = sieve(10 ** ceil(:math.log10(upper_bound) / 2))
+
+    fn number ->
+      root = ceil(:math.sqrt(number))
+
+      init_primes
+      |> Stream.take_while(&(&1 <= root))
+      |> Enum.all?(&(rem(number, &1) > 0))
+    end
   end
 
   defp sieve(number) when is_integer(number), do: sieve(Range.to_list(3..number//2), [2])
@@ -42,8 +46,4 @@ defmodule BackwardPrimes do
     |> Enum.reverse()
     |> Integer.undigits()
   end
-
-  defp digit_ceil(number), do: 10 ** ceil(:math.log10(number))
-
-  defp root_ceil(number), do: ceil(:math.sqrt(number))
 end
