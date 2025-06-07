@@ -2,39 +2,32 @@ defmodule BackwardPrimes do
   @moduledoc """
   Backwards Primes are primes that when read backwards in base 10 (from right to left) are a different prime
   """
+  require Integer
+
+  @spec backwards_prime(integer(), integer()) :: [integer()]
+  def backwards_prime(start, stop) when Integer.is_even(start),
+    do: backwards_prime(start + 1, stop)
 
   def backwards_prime(start, stop) do
-    stop
-    |> ceil_base_10()
-    |> sieve()
-    |> backwards
-    |> clamp(start, stop)
-  end
+    init_primes = stop |> digit_ceil() |> root_ceil() |> sieve()
 
-  defp ceil_base_10(n) do
-    10 ** ceil(:math.log10(n)) - 1
-  end
+    prime? = fn number ->
+      root = root_ceil(number)
 
-  defp clamp(enumerable, a, b) do
-    Enum.drop_while(enumerable, &(&1 < a))
-    |> Enum.take_while(&(&1 <= b))
-  end
-
-  def backwards(primes), do: backwards(primes, primes, [])
-  defp backwards(_primes, [], target), do: Enum.reverse(target)
-
-  defp backwards(primes, [head | tail], acc) do
-    s = to_string(head)
-    rev = String.reverse(s)
-
-    if s != rev and Enum.member?(primes, String.to_integer(rev)) do
-      backwards(primes, tail, [head | acc])
-    else
-      backwards(primes, tail, acc)
+      init_primes
+      |> Stream.take_while(&(&1 <= root))
+      |> Enum.all?(&(rem(number, &1) > 0))
     end
+
+    for prime <- start..stop//2,
+        prime?.(prime),
+        reversed = reverse_number(prime),
+        prime != reversed,
+        prime?.(reversed),
+        do: reverse_number(reversed)
   end
 
-  def sieve(n), do: sieve(3..n//2 |> Enum.to_list(), [2])
+  defp sieve(number) when is_integer(number), do: sieve(Range.to_list(3..number//2), [2])
   defp sieve([], acc), do: Enum.reverse(acc)
 
   defp sieve([head | tail], acc) do
@@ -42,4 +35,15 @@ defmodule BackwardPrimes do
     |> Enum.reject(&(rem(&1, head) == 0))
     |> sieve([head | acc])
   end
+
+  defp reverse_number(number) do
+    number
+    |> Integer.digits()
+    |> Enum.reverse()
+    |> Integer.undigits()
+  end
+
+  defp digit_ceil(number), do: 10 ** ceil(:math.log10(number))
+
+  defp root_ceil(number), do: ceil(:math.sqrt(number))
 end
