@@ -4,53 +4,52 @@ defmodule RoboscriptSyntaxHighlighting do
   def highlight(code) do
     code
     |> String.codepoints()
-    |> Enum.chunk_by(&Function.identity/1)
-    |> Enum.map(fn letters -> span(hd(letters), length(letters)) end)
+    |> Enum.chunk_by(&chunk_fun/1)
+    |> Enum.map(&map_fun/1)
+    |> Enum.join()
   end
 
-  def process(coll, curr, acc)
-  def process([], curr, acc), do: [form(curr |> Enum.reverse()) | acc] |> Enum.reverse()
-  def process([head | tail], [], acc), do: process(tail, [head], acc)
-  def process(["F" | tail], ["F" | _] = curr, acc), do: process(tail, ["F" | curr], acc)
-  def process(["F" | tail], curr, acc), do: process(tail, ["F"], [form(curr) | acc])
-  def process(["R" | tail], ["R" | _] = curr, acc), do: process(tail, ["R" | curr], acc)
-  def process(["R" | tail], curr, acc), do: process(tail, ["R"], [form(curr) | acc])
-  def process(["L" | tail], ["L" | _] = curr, acc), do: process(tail, ["L" | curr], acc)
-  def process(["L" | tail], curr, acc), do: process(tail, ["L"], [form(curr) | acc])
-  def process([n | tail], [an | _] = curr, acc) when Regex.match?("\d", n) do
-    if Regex.match?("\d", an) do
-      process(tail, [n | curr], acc)
-    else
-      process(tail, [n], [form(curr) | acc])
-    end
-  end
-  def process(["(" | tail], ["(" | _] = curr, acc), do: process(tail, ["(" | curr])
-  def process(["R" | tail], curr, acc), do: process(tail, ["R"], [form(curr) | acc])
-
-
-
-  def chunk(s), do: chunk(String.reverse(s), "", [])
-  defp chunk("", "", acc), do: acc
-  defp chunk("", cur, acc), do: [span(cur) | acc]
-
-  defp chunk(<<letter::binary-size(1), rest::binary>>, "", acc),
-    do: chunk(rest, letter, acc)
-
-  defp chunk(<<current::binary-size(1), rest::binary>>, <<current::>>, acc),
-    do: chunk(rest, , acc)
-
-  defp chunk(<<letter::binary-size(1), rest::binary>>, {current, count}, acc) do
-    chunk(rest, {letter, 1}, chunk("", {current, count}, acc))
+  def map_fun(["F" | _] = lst) do
+    span_format("pink", Enum.join(lst))
   end
 
-  def color("F"), do: "pink"
-  def color("L"), do: "red"
-  def color("R"), do: "green"
-  # def color(digit) when Regex.match?("\d", digit), do: "orange"
-
-  def span(flr, count) when flr in ["F", "L", "R"],
-    do: "<span style=\"color: #{color(flr)}\">#{String.duplicate(flr, count)}</span>"
-  def span(digit, count) when Regex.match?("\d", digit) do
-    "<span style=\"color: orange\">#{String.duplicate(, count)}</span>"
+  def map_fun(["R" | _] = lst) do
+    span_format("green", Enum.join(lst))
   end
+
+  def map_fun(["L" | _] = lst) do
+    span_format("red", Enum.join(lst))
+  end
+
+  def map_fun(["(" | _] = lst) do
+    Enum.join(lst)
+  end
+
+  def map_fun([")" | _] = lst) do
+    Enum.join(lst)
+  end
+
+  def map_fun(lst) do
+    span_format("orange", Enum.join(lst))
+  end
+
+  def span_format(color, text) do
+    "<span style=\"color: #{color}\">#{text}</span>"
+  end
+
+  def chunk_fun("F"), do: :forward
+  def chunk_fun("R"), do: :right
+  def chunk_fun("L"), do: :left
+  def chunk_fun("("), do: :brace
+  def chunk_fun(")"), do: :brace
+  def chunk_fun("0"), do: :digit
+  def chunk_fun("1"), do: :digit
+  def chunk_fun("2"), do: :digit
+  def chunk_fun("3"), do: :digit
+  def chunk_fun("4"), do: :digit
+  def chunk_fun("5"), do: :digit
+  def chunk_fun("6"), do: :digit
+  def chunk_fun("7"), do: :digit
+  def chunk_fun("8"), do: :digit
+  def chunk_fun("9"), do: :digit
 end
