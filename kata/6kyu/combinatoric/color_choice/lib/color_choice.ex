@@ -5,17 +5,15 @@ defmodule ColorChoice do
   the smallest. If there are no solutions, return -1.
   """
 
+  @spec checkchoose(pos_integer(), pos_integer()) :: integer()
   def checkchoose(m, n) do
-    1..div(n, 2)
-    |> Enum.find(
-      -1,
-      fn
-        x -> choose(n, x) == m
-      end
-    )
+    Enum.find(1..div(n, 2), -1, &(choose(n, &1) == m))
   end
 
-  defp choose(n, x) do
-    div(Enum.product((x + 1)..n), Enum.product(1..(n - x)))
+  def choose(n, x) when n < x, do: 0
+
+  def choose(n, x) do
+    Enum.zip((x + 1)..n//1, 1..(n - x)//1)
+    |> Enum.reduce(1, fn {a, b}, acc -> div(a * acc, b) end)
   end
 end
