@@ -1,31 +1,26 @@
 defmodule StrongestEvenNumber do
-  @moduledoc false
-  require Integer
+  @moduledoc """
+  The strongness of an even number is the number of times we
+  can successively divide it by 2 until we reach an odd number.
+  """
 
-  def strongest_even(n, m) do
-    mana = fn x -> 2 ** x end
+  @doc """
+  Given a closed interval [n, m], return the even number that
+  is the strongest in the interval. If multiple solutions
+  exist return the smallest strongest even number.
 
+  ## Examples
+
+    iex> StrongestEvenNumber.strongest_even(129, 193)
+    192
+  """
+
+  @spec strongest_even(integer(), integer()) :: integer()
+  def strongest_even(n, m) when n < m do
     Range.new(floor(:math.log2(m)), 0, -1)
-    |> Enum.map()
+    |> Enum.map(fn x -> Bitwise.bsl(1, x) end)
+    |> Enum.map(fn x -> x * ceil(n / x) end)
+    |> Enum.drop_while(fn x -> x > m end)
+    |> List.first()
   end
-
-  defp first
-
-  #   if n <= largest_power_of_two_less_than_or_equal_to_limit(m) do
-  #     largest_power_of_two_less_than_or_equal_to_limit(m)
-  #   else
-  #     x = if Integer.is_even(n), do: n, else: n + 1
-  #     y = if Integer.is_even(m), do: m, else: m - 1
-
-  #     Range.new(x, y, 2)
-  #     |> Enum.max_by(&evenness/1)
-  #   end
-  # end
-
-  # defp evenness(n) when Integer.is_odd(n), do: 0
-  # defp evenness(n), do: 1 + evenness(div(n, 2))
-
-  # defp largest_power_of_two_less_than_or_equal_to_limit(n) do
-  #   2 ** floor(:math.log2(n))
-  # end
 end
