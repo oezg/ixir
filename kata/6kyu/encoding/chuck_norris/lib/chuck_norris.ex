@@ -1,27 +1,26 @@
 defmodule ChuckNorris do
   @moduledoc false
 
+  @spec send(binary()) :: binary()
   def send(s) do
     String.to_charlist(s)
-    |> Enum.map(fn char_val ->
-      Integer.digits(char_val, 2)
-      |> Enum.chunk_by(&Function.identity/1)
-      |> Enum.map(&{List.first(&1), length(&1)})
-      |> Enum.map(fn {t, n} ->
-        "#{if(t == 1, do: "0", else: "00")} #{String.duplicate("0", n)}"
-      end)
-      |> Enum.join(" ")
+    |> Enum.flat_map(&Enum.take([0 | Integer.digits(&1, 2)], -7))
+    |> Enum.chunk_by(&Function.identity/1)
+    |> Enum.map_join(" ", fn
+      [1 | rest] -> "0 0#{String.duplicate("0", length(rest))}"
+      [0 | rest] -> "00 0#{String.duplicate("0", length(rest))}"
     end)
-    |> Enum.join(" ")
   end
 
+  @spec receive(binary()) :: binary()
   def receive(s) do
     String.split(s)
     |> Enum.chunk_every(2)
-    |> Enum.map(fn
-      ["0", bits] -> String.duplicate("1", String.length(bits))
-      ["00", bits] -> String.duplicate("0", String.length(bits))
+    |> Enum.flat_map(fn
+      ["0", bits] -> List.duplicate(1, String.length(bits))
+      ["00", bits] -> List.duplicate(0, String.length(bits))
     end)
-    |> Enum.map()
+    |> Enum.chunk_every(7)
+    |> Enum.map_join(&<<Integer.undigits(&1, 2)::utf8>>)
   end
 end
