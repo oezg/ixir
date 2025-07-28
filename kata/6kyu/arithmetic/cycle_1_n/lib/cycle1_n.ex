@@ -10,9 +10,11 @@ defmodule Cycle1N do
 
   def cycle(n), do: cycle(n, rem(10, n) * 10, [div(10, n)])
 
-  defp cycle(n, rest, acc) do
+  defp cycle(n, rest, acc) when Integer.is_even(length(acc)) do
     repeating?(acc) || cycle(n, rem(rest, n) * 10, [div(rest, n) | acc])
   end
+
+  defp cycle(n, rest, acc), do: cycle(n, rem(rest, n) * 10, [div(rest, n) | acc])
 
   defp repeating?(list) do
     half_length = div(length(list), 2)
