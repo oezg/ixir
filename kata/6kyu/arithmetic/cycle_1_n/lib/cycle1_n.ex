@@ -8,18 +8,12 @@ defmodule Cycle1N do
   @spec cycle(pos_integer()) :: pos_integer()
   def cycle(n) when Integer.is_even(n) or rem(n, 5) == 0, do: -1
 
-  def cycle(n), do: cycle(n, rem(10, n) * 10, [div(10, n)])
+  def cycle(n), do: cycle(n, 1, 10, %{})
 
-  defp cycle(n, rest, acc) when Integer.is_even(length(acc)) do
-    repeating?(acc) || cycle(n, rem(rest, n) * 10, [div(rest, n) | acc])
-  end
-
-  defp cycle(n, rest, acc), do: cycle(n, rem(rest, n) * 10, [div(rest, n) | acc])
-
-  defp repeating?(list) do
-    half_length = div(length(list), 2)
-    {a, b} = Enum.split(list, half_length)
-
-    if a == b and Enum.sum(a) > 0, do: half_length
+  defp cycle(n, index, remainder, remainders) do
+    case Map.get(remainders, remainder, 0) do
+      0 -> cycle(n, index + 1, rem(remainder * 10, n), Map.put_new(remainders, remainder, index))
+      position -> index - position
+    end
   end
 end
