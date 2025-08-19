@@ -1,0 +1,49 @@
+1. get asdf
+
+https://github.com/asdf-vm/asdf/releases
+
+mkdir asdf-download && cd asdf-download
+wget https://github.com/asdf-vm/asdf/releases/download/v0.18.0/asdf-v0.18.0-linux-amd64.tar.gz
+wget https://github.com/asdf-vm/asdf/releases/download/v0.18.0/asdf-v0.18.0-linux-amd64.tar.gz.md5
+
+echo "  asdf-v0.18.0-linux-amd64.tar.gz" >> asdf-v0.18.0-linux-amd64.tar.gz.md5
+md5sum -c asdf-v0.18.0-linux-amd64.tar.gz.md5
+
+tar -xzvf asdf-v0.18.0-linux-amd64.tar.gz
+mv asdf ~/bin
+
+2. erlang 
+
+https://github.com/asdf-vm/asdf-erlang#before-asdf-install
+
+apt-get -y install build-essential autoconf m4 libncurses5-dev libwxgtk3.0-gtk3-dev \
+libwxgtk-webview3.0-gtk3-dev libgl1-mesa-dev libglu1-mesa-dev libpng-dev libssh-dev \
+unixodbc-dev xsltproc fop libxml2-utils libncurses-dev openjdk-11-jdk
+
+
+asdf plugin add erlang https://github.com/asdf-vm/asdf-erlang.git
+
+asdf set erlang 28.0.2
+
+3. elixir
+
+asdf plugin add elixir https://github.com/asdf-vm/asdf-elixir.git
+
+asdf set elixir 1.18.4-otp-28
+
+4. postgres
+
+https://github.com/smashedtoatoms/asdf-postgres?tab=readme-ov-file#ubuntu-wsl
+
+sudo apt-get install build-essential libssl-dev libreadline-dev zlib1g-dev \
+libcurl4-openssl-dev uuid-dev icu-devtools libicu-dev pkg-config
+
+asdf plugin add postgres https://github.com/smashedtoatoms/asdf-postgres.git
+
+asdf set postgres 17.6
+
+5. system dependencies
+
+sudo apt install pkg-config bison flex
+
+asdf install

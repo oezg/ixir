@@ -1,0 +1,4 @@
+dependencies:
+  erlang.org: =28.0.2
+  elixir-lang.org: =1.18.4
+  postgresql.org: =17.2.0
